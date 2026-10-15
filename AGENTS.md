@@ -71,3 +71,56 @@ repository. Do not invent those gates.
   why.
 - **Create and follow a TODO list:** Create a TODO list and follow it. Do not
   stop until the tools make it clear that every task is complete.
+
+## Notification Instructions
+
+- The user has given permission to use the `notify-send` command to signal
+  task completion. Example:
+
+  ```bash
+  notify-send "Question from Coding Agent" \
+    "Please clarify how to complete the testing task."
+  ```
+
+- The user wants a `notify-send` notification whenever you ask a question.
+
+- Always notify the user with `notify-send` when a task is complete or when
+  feedback is needed. You have standing permission to use the notification
+  tool.
+
+- Also use the following command when you are finished with a task or need
+  further help:
+
+  ```bash
+  timeout 2 zellij pipe -- \
+    "zjstatus::notify::󰵰 Agent finished. This is really fun. "
+  ```
+
+- That Zellij command only displays in the current Zellij session. Add a
+  space at the end of the notification string.
+
+- Use both notification methods as appropriate. Always preface the Zellij
+  command with a timeout of 2 seconds.
+
+## Git Workflow
+
+- The software developer commits changes unless they explicitly ask the agent
+  to create a commit.
+- When asked to commit, write a clear, descriptive message; do not commit
+  secrets, `.env` files, credentials, commented-out code, or debug leftovers.
+- **Never run `git stash`:** It risks losing uncommitted work. Prefer a
+  commit or `git worktree` if work must be set aside; the developer handles
+  rebasing and history cleanup.
+
+## Making Changes
+
+1. **Understand:** Thoroughly understand the request and the relevant code.
+   Explore with the available tools.
+1. **Plan:** Formulate a clear plan before making changes.
+1. **Implement:** Make small, incremental changes.
+1. **Verify:** Run `uv run task all` and fix any failures.
+1. **Commit:** The software developer commits unless they ask you to.
+1. **Rules:** Follow this file and the project's established conventions.
+1. **Completion:** When finished, summarize what you completed, how you
+   completed it, challenges you faced, how you overcame them, and which rules
+   you followed. Send notifications as described above.
