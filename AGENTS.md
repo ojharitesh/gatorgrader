@@ -102,6 +102,79 @@ repository. Do not invent those gates.
 - Use both notification methods as appropriate. Always preface the Zellij
   command with a timeout of 2 seconds.
 
+## Code Requirements
+
+All Python changes should follow the conventions already used in this
+codebase and enforced by ruff:
+
+- **Formatting and lint:** ruff line length 79; selected rules include E, D,
+  I, F, PL, Q, RUF, W, and T201; D203, D213, and E501 are ignored. Test files
+  may use magic numbers (PLR2004).
+- **Docstrings:** Module and function docstrings are expected (ruff `D`).
+  Preserve the established docstring style in a file when editing it.
+- **Constants:** Prefer namedtuples from `gator/constants.py`
+  (`create_constants`). Do not invent parallel magic strings when a constant
+  already exists.
+- **Imports:** Group as standard library, third-party, then
+  `from gator import ...`. Keep imports at the top of the file. Avoid
+  wildcard imports.
+- **Naming:** snake_case for functions and variables, PascalCase for classes,
+  UPPER_SNAKE_CASE for module-level constants where that pattern is used.
+- **Checks API:** Each check in `gator/checks/check_*.py` exposes
+  `get_parser`, `parse`, and `act`.
+- **Quality habits:** Use meaningful names; no bare `except:`; catch specific
+  exceptions; avoid mutable default arguments; prefer `with` for resource
+  cleanup; do not put secrets in source.
+- **Do not impose:** full type hints on every function, a mypy-clean gate,
+  Args/Returns sections on every docstring, no blank lines inside function
+  bodies, lowercase-only comments, extracting every literal into a new
+  constant, or Pydantic models.
+
+### Check plugin shape
+
+New or edited checks should expose this shape (mirror
+`gator/checks/check_ConfirmFileExists.py` for argparse details):
+
+```python
+def get_parser():
+    """Get a parser for the arguments provided on the command-line."""
+    ...
+
+
+def parse(args):
+    """Use the parser on the provided arguments."""
+    return checkers.parse(get_parser, args)
+
+
+def act(main_parsed_arguments, check_remaining_arguments):
+    """Perform the action for this check."""
+    ...
+```
+
+## Project Structure Requirements
+
+- Source code lives in `gator/` with the CLI in `gatorgrader.py`.
+- Tests live in `tests/` with a matching structure, including
+  `tests/checks/` for check plugins.
+- Use `uv` for dependency management, virtual environments, and task running.
+- Support Python 3.10 through 3.14 on macOS, Linux, and Windows (as CI does).
+- Statement and branch coverage on `gator` must stay at or above **99%**
+  (`coveragefailunder` in `pyproject.toml`).
+
+## Testing Requirements
+
+- Test functions follow the same Python conventions as production code where
+  applicable.
+- Names start with `test_` and should be descriptive.
+- Group tests by the unit under test; order them for readability.
+- Tests must be independent so they can run in any order.
+- Tests must work on a local machine and in CI.
+- Prefer `@pytest.mark.parametrize` patterns already used in the suite.
+- Place check tests under `tests/checks/`.
+- Aim for coverage consistent with the 99% fail-under gate.
+- Do not delete failing tests to make the suite pass.
+- New behavior should include new or updated tests.
+
 ## Git Workflow
 
 - The software developer commits changes unless they explicitly ask the agent
@@ -112,15 +185,46 @@ repository. Do not invent those gates.
   commit or `git worktree` if work must be set aside; the developer handles
   rebasing and history cleanup.
 
+## Boundaries
+
+- **Always:** Use `uv` and taskipy; run `uv run task all` before claiming
+  done; put checks in `gator/checks/` with the `check_` prefix; put tests
+  beside existing patterns; follow ruff; notify on questions and completion.
+- **Ask first:** Adding runtime dependencies; changing CI or workflows;
+  renaming public APIs; removing checks or tests.
+- **Never:** Commit secrets or credentials; use `pip` or `venv` instead of
+  `uv`; lower the 99% coverage gate to pass; invent mypy or other missing
+  tools as required gates; rewrite the codebase to gatorgrade-only style
+  rules; game tests or coverage to hide real failures.
+
 ## Making Changes
 
-1. **Understand:** Thoroughly understand the request and the relevant code.
+- **Understand:** Thoroughly understand the request and the relevant code.
    Explore with the available tools.
-1. **Plan:** Formulate a clear plan before making changes.
-1. **Implement:** Make small, incremental changes.
-1. **Verify:** Run `uv run task all` and fix any failures.
-1. **Commit:** The software developer commits unless they ask you to.
-1. **Rules:** Follow this file and the project's established conventions.
-1. **Completion:** When finished, summarize what you completed, how you
+- **Plan:** Formulate a clear plan before making changes.
+- **Implement:** Make small, incremental changes.
+- **Verify:** Run `uv run task all` and fix any failures.
+- **Commit:** The software developer commits unless they ask you to.
+- **Rules:** Follow this file and the project's established conventions.
+- **Completion:** When finished, summarize what you completed, how you
    completed it, challenges you faced, how you overcame them, and which rules
    you followed. Send notifications as described above.
+
+## Additional Notes for the Coding Agent
+
+This section is for coding agents. After finishing a task, append helpful
+project notes here as a Markdown list when appropriate.
+
+- Prefer [`README.md`](README.md) and this file for setup and task
+  commands; do not rely on other contributor docs.
+- The verification gate is `uv run task all` (lint + test + cover). Coverage
+  fail-under is **99%** with branch coverage on `gator`.
+- Check plugins live under `gator/checks/` and use the `check_` file prefix.
+  Each exposes `get_parser`, `parse`, and `act`.
+- [`scripts/tasks.py`](scripts/tasks.py) is a legacy Invoke/pyenv multi-version
+  helper around the same taskipy commands. Prefer `uv python pin` for
+  switching Python versions.
+- No mypy or other static typecheck task is configured; do not treat typecheck
+  as a required gate.
+- Day-to-day lint and format are ruff via taskipy; bandit, radon, and
+  xenon remain part of `uv run task lint`.
