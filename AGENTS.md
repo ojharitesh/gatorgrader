@@ -74,7 +74,7 @@ uv run --project /absolute/path/to/gatorgrader python -c \
   style. Use meaningful names, snake_case functions and variables,
   PascalCase classes, and UPPER_SNAKE_CASE module constants where used.
 - Group top-level imports as standard library, third-party, then local
-  `from gator import ...`; avoid wildcard imports.
+  `from gator import ...`. Keep imports at module scope; avoid wildcards.
 - Reuse `gator/constants.py` namedtuple records and `create_constants`
   rather than duplicating existing magic strings.
 - Catch specific exceptions; avoid mutable defaults; use context managers
@@ -136,17 +136,51 @@ uv run --project /absolute/path/to/gatorgrader python -c \
 - Ask before adding runtime dependencies, changing CI/workflows, renaming
   public APIs, or removing checks or tests.
 
-## Notifications and task-specific references
+## Notifications
 
-Always notify on completion, questions, or feedback needs using both methods
-when available; permission is already granted. Report unavailable commands.
-The Zellij command needs a two-second timeout and a trailing message space.
+Send a desktop notification when a task finishes, feedback is needed, or you
+ask a question. Permission is already granted. Adapt the title and message;
+use the command for the current OS and report unavailable tools.
+
+Linux:
 
 ```bash
 notify-send "Coding agent" "Task complete or feedback needed."
-timeout 2 zellij pipe -- \
-  "zjstatus::notify::󰵰 Agent finished. This is really fun. "
 ```
+
+macOS:
+
+```bash
+osascript -e 'display notification "Task complete." with title "Agent"'
+```
+
+Windows, in PowerShell with BurntToast installed:
+
+```powershell
+Import-Module BurntToast
+New-BurntToastNotification -Text "Coding agent", "Task complete."
+```
+
+If needed, run setup once in a regular PowerShell terminal:
+
+```powershell
+Install-Module -Name BurntToast -Scope CurrentUser
+```
+
+[BurntToast](https://github.com/Windos/BurntToast) is archived; existing
+releases remain available. It is an optional notification tool, not a
+GatorGrader dependency.
+
+When running inside Zellij, also send its session notification if the tools
+are available. Keep the two-second timeout and trailing message space. This
+supplements the desktop notification; it does not replace it.
+
+```bash
+timeout 2 zellij pipe -- \
+  "zjstatus::notify::Agent finished. This is really fun. "
+```
+
+## Task-specific references
 
 - `scripts/tasks.py` is a legacy Invoke/pyenv helper, not normal setup. Its
   default Python 3.7.3 is unsupported, Invoke is not a declared dependency,
