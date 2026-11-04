@@ -16,15 +16,15 @@ configuration, scoring, reports, history, or auto-hints, see the separate
 - [Finding ways to help](#finding-ways-to-help)
 - [Raising an Issue](#raising-an-issue)
 - [Project Standards](#project-standards)
-  - [Development Environment](#development-environment)
-  - [Running the edited checkout](#running-the-edited-checkout)
-  - [Coding and check plugins](#coding-and-check-plugins)
-  - [Automated Testing](#automated-testing)
-  - [Test Coverage](#test-coverage)
-  - [Code Linting](#code-linting)
-  - [Continuous Integration](#continuous-integration)
-  - [Program Debugging](#program-debugging)
-  - [Contributor scripts](#contributor-scripts)
+   - [Development Environment](#development-environment)
+   - [Running the edited checkout](#running-the-edited-checkout)
+   - [Coding and check plugins](#coding-and-check-plugins)
+   - [Automated Testing](#automated-testing)
+   - [Test Coverage](#test-coverage)
+   - [Code Linting](#code-linting)
+   - [Continuous Integration](#continuous-integration)
+   - [Program Debugging](#program-debugging)
+   - [Contributor scripts](#contributor-scripts)
 - [Making a Pull Request](#making-a-pull-request)
 - [Reviewing, merging, and releasing](#reviewing-merging-and-releasing)
 - [External Resources](#external-resources)
@@ -160,12 +160,15 @@ automatically use these local changes. Verify the imported path before
 reporting that an edit has no effect. When testing integration with
 GatorGrade, verify which GatorGrader checkout that environment imports too.
 
+For the separate local-hook prototype, see
+[pre-commit setup](docs/PRE_COMMIT.md). Hooks are installed per clone.
+
 ### Coding and check plugins
 
 - Keep source in gator/ with the CLI entry in gatorgrader.py; mirror the
   source structure in tests/ and place check tests in tests/checks/.
-- Follow Ruff formatting and import ordering, with a Python line length of
-  79. Soft-wrap Markdown near 80 columns where practical.
+- Follow Ruff formatting and import ordering, with a Python line
+  length of 79. Soft-wrap Markdown near 80 columns where practical.
 - Add module and function docstrings and preserve the established style in
   edited files. Use meaningful names, snake_case functions and variables,
   PascalCase classes, and UPPER_SNAKE_CASE module constants where used.
